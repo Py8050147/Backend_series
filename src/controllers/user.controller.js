@@ -1,4 +1,4 @@
-import { asyncHandlar } from "../utils/asyncHandler.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { User } from "../models/user.model.js";
 import { uploadonCloudinary } from "../utils/cloudinary.js";
@@ -24,10 +24,7 @@ const generateAccessAndRefreshToken = async (userId) => {
   }
 };
 
-const registerUser = asyncHandlar(async (req, res) => {
-  //    return res.status(200).json({
-  //         message: "ok"
-  //     })
+const registerUser = asyncHandler(async (req, res) => {
   //get user details from frontend
   //validation -not empty
   //check if user already exists : username email
@@ -55,7 +52,7 @@ const registerUser = asyncHandlar(async (req, res) => {
     throw new ApiError(409, "User with email or username exits");
   }
 
-  console.log(req.files);
+  // console.log(req.files);
 
   const avatarLocalPath = req.files?.avatar[0]?.path;
   // const coverImageLocalPath = req.files?.coverImage[0]?.path
@@ -87,7 +84,7 @@ const registerUser = asyncHandlar(async (req, res) => {
     coverImage: coverImage?.url || "",
     email,
     password,
-    fullname,
+    fullname
   });
 
   const createdUser = await User.findById(user._id)
@@ -103,7 +100,7 @@ const registerUser = asyncHandlar(async (req, res) => {
     .json(new ApiResponse(200, createdUser, "User registered Successfully"));
 });
 
-const loginUser = asyncHandlar(async (req, res) => {
+const loginUser = asyncHandler(async (req, res) => {
   // req.body => data -compleate
   // username or email -compleate
   // find the user
@@ -161,16 +158,16 @@ const loginUser = asyncHandlar(async (req, res) => {
     );
 });
 
-const logoutUser = asyncHandlar(async (req, res) => {
+const logoutUser = asyncHandler(async (req, res) => {
   await User.findByIdAndUpdate(
     req.user._id,
-    { $set: { refreshToken: null } },
+    { $unset: { refreshToken: 1 } },
     { new: true }
   );
 
   const options = {
     httpOnly: true,
-    // secure:true
+    // secure:true  // secure used by https not hhtp
     secure: process.env.NODE_ENV === "production",
   };
 
@@ -181,7 +178,7 @@ const logoutUser = asyncHandlar(async (req, res) => {
     .json(new ApiResponse(200, {}, "User logged out successfully"));
 });
 
-const refreshAccessToken = asyncHandlar(async (req, res) => {
+const refreshAccessToken = asyncHandler(async (req, res) => {
   const incomingRefreshToken =
     req.cookies.refreshToken || req.body.refreshToken;
 
@@ -207,7 +204,7 @@ const refreshAccessToken = asyncHandlar(async (req, res) => {
 
     const options = {
       httpOnly: true,
-      secure: true, // here problem and check the error
+       secure: true, // here problem and check the error
     };
 
     const { accessToken, newRefreshToken } =
@@ -229,7 +226,7 @@ const refreshAccessToken = asyncHandlar(async (req, res) => {
   }
 });
 
-const changeCurrentUser = asyncHandlar(async (req, res) => {
+const changeCurrentUser = asyncHandler(async (req, res) => {
   const { oldPassword, newPassword } = req.body;
   // if (!(newPassword === confpassword)) {
   //     // this error throw
@@ -249,13 +246,13 @@ const changeCurrentUser = asyncHandlar(async (req, res) => {
     .json(new ApiResponse(200, {}, "Password changed Successfully"));
 });
 
-const getCurrentUser = asyncHandlar(async (req, res) => {
+const getCurrentUser = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(200, req.user, "Current user fetched successfully");
 });
 
-const updateAccountDetails = asyncHandlar(async (req, res) => {
+const updateAccountDetails = asyncHandler(async (req, res) => {
   const { fullname, email } = req.body;
 
   if (!fullname || !email) {
@@ -278,7 +275,7 @@ const updateAccountDetails = asyncHandlar(async (req, res) => {
     .json(new ApiResponse(200, user, "Update Account details successfully"));
 });
 
-const updateUserAvatar = asyncHandlar(async (req, res) => {
+const updateUserAvatar = asyncHandler(async (req, res) => {
   const avatarLocalPath = req.file?.path;
 
   if (!avatarLocalPath) {
@@ -307,7 +304,7 @@ const updateUserAvatar = asyncHandlar(async (req, res) => {
     .json(new ApiResponse(200, user, "Avatar updated is successfully "));
 });
 
-const updateUserCoverImage = asyncHandlar(async (req, res) => {
+const updateUserCoverImage = asyncHandler(async (req, res) => {
   const coverImageLocalPath = req.file?.path;
 
   if (!avatarLocalPath) {
@@ -335,7 +332,7 @@ const updateUserCoverImage = asyncHandlar(async (req, res) => {
     .json(new ApiResponse(200, user, "cover image updated on successfully"));
 });
 
-const getUserChannelProfile = asyncHandlar(async (req, res) => {
+const getUserChannelProfile = asyncHandler(async (req, res) => {
   const { username } = req.params;
 
   if (!username?.trim()) {
@@ -408,7 +405,7 @@ const getUserChannelProfile = asyncHandlar(async (req, res) => {
     );
 });
 
-const getWatchHistory = asyncHandlar(async (req, res) => {
+const getWatchHistory = asyncHandler(async (req, res) => {
   const user = await User.aggregate([
     {
       $match: {

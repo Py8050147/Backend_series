@@ -63,10 +63,9 @@ userSchema.pre('save', async function(next) {
             _id: this._id,
             email: this.email,
             username: this.username,
-            fullname: this.fullname,
-
-
-        }, process.env.ACCESS_TOKEN_SECRET, {
+           fullname: this.fullname,
+       },
+           process.env.ACCESS_TOKEN_SECRET, {
             expiresIn: process.env.ACCESS_TOKEN_EXPIRY
         }
     )
