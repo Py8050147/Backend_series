@@ -130,7 +130,7 @@ const loginUser = asyncHandler(async (req, res) => {
   const { accessToken, refreshToken } = await generateAccessAndRefreshToken(
     user._id
   );
-  console.log({ accessToken, refreshToken });
+  // console.log({ accessToken, refreshToken });
   const loggedInuser = await User.findById(user._id).select(
     "-password -refreshToken"
   );
@@ -204,12 +204,13 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
     const options = {
       httpOnly: true,
-       secure: true, // here problem and check the error
+      secure: process.env.NODE_ENV === "production" // here problem and check the error
     };
 
-    const { accessToken, newRefreshToken } =
+    const { accessToken, refreshToken: newRefreshToken } =
       await generateAccessAndRefreshToken(user._id);
-
+    console.log('accessToken', accessToken)
+    console.log('newRefreshToken', newRefreshToken)
     return res
       .status(200)
       .cookie("accessToken", accessToken, options)
@@ -249,7 +250,7 @@ const changeCurrentUser = asyncHandler(async (req, res) => {
 const getCurrentUser = asyncHandler(async (req, res) => {
   return res
     .status(200)
-    .json(200, req.user, "Current user fetched successfully");
+    .json(new ApiResponse(200, req.user, "Current user fetched successfully"));
 });
 
 const updateAccountDetails = asyncHandler(async (req, res) => {

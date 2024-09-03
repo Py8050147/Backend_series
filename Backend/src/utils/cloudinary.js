@@ -29,7 +29,7 @@ const uploadonCloudinary = async (localFilePath) => {
    }
 }
 
-export {uploadonCloudinary}
+export  {uploadonCloudinary}
 
 // cloudinary.v2.uploader.upload(
 //            'https://res.cloudinary.com/demo/image/upload/getting-started/shoes.jpg', {
