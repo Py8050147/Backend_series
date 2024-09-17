@@ -7,19 +7,19 @@ function PublishVideo() {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [videoFile, setVideoFile] = useState(null)
-  const [thumnail, setThumnail] = useState(null)
+  const [thumbnail, setThumbnail] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    const from = new FormData()
-    from.append('title', title)
-    from.append('description', description)
-    from.append('videoFile', videoFile)
-    from.append('thumnail', thumnail)
-    console.log(from)
+    const form = new FormData()
+    form.append('title', title)
+    form.append('description', description)
+    form.append('videoFile', videoFile)
+    form.append('thumbnail', thumbnail);
+    console.log(form)
 
     try {
-      const response = await axios.post('/api/v1/videos', from, {
+      const response = await axios.post('/api/v1/videos', form, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -30,15 +30,11 @@ function PublishVideo() {
     } catch (error) {
       console.error("Registration failed", error);
     }
-
-
-
-
   }
 
 
   return (
-    <div className='container mx-auto max-w-3xl'>
+    <div className='container mx-auto max-w-3xl py-20'>
       <div>
         <h1 className='text-3xl font-bold text-gray-900'>Publish Video</h1>
         <form className="bg-transparent shadow-md rounded px-8 pt-6 pb-8" onSubmit={handleSubmit}>
@@ -72,7 +68,7 @@ function PublishVideo() {
               id="videoFile"
               type="file"
               name="videoFile"
-              accept="video/*"
+              // accept="video/*"
               onChange={(e) => setVideoFile(e.target.files[0])}
               required
             />
@@ -84,8 +80,8 @@ function PublishVideo() {
               id="thumbnail"
               type="file"
               name="thumbnail"
-              accept="image/*"
-              onChange={(e) => setThumnail(e.target.files[0])}
+              // accept="image/*"
+              onChange={(e) => setThumbnail(e.target.files[0])}
               required
             />
           </div>
